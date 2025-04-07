@@ -1,0 +1,26 @@
+# Python
+__pycache__/
+*.py[cod]
+*.class
+*.so
+.Python
+venv/
+ENV/
+*.egg-info/
+.ipynb_checkpoints
+# Data (don't commit large data files)
+*.csv
+*.json
+app/data/raw/
+app/data/processed/
+# Credentials
+*.env
+.env
+credentials.json
+# IDE
+.idea/
+.vscode/
+*.swp
+# OS specific
+.DS_Store
+Thumbs.db
