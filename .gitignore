@@ -24,3 +24,6 @@ credentials.json
 # OS specific
 .DS_Store
 Thumbs.db
+# ML models
+*.joblib
+*.pkl
