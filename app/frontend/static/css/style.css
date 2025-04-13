@@ -1,0 +1,132 @@
+/* Global Styles */
+body {
+    background-color: #f5f5f5;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.navbar-brand {
+    font-weight: bold;
+    letter-spacing: 0.5px;
+}
+
+/* Section Visibility */
+.section {
+    display: none;
+}
+
+.section.active {
+    display: block;
+}
+
+/* Card Styles */
+.card {
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+}
+
+.card-header {
+    background-color: #f8f9fa;
+    border-bottom: 1px solid #e9ecef;
+    font-weight: 600;
+}
+
+/* Transaction Table */
+.table-responsive {
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.table th {
+    position: sticky;
+    top: 0;
+    background-color: #f8f9fa;
+    z-index: 1;
+}
+
+/* Category Colors */
+.category-food {
+    background-color: #FF6384;
+}
+
+.category-transport {
+    background-color: #36A2EB;
+}
+
+.category-shopping {
+    background-color: #FFCE56;
+}
+
+.category-utilities {
+    background-color: #4BC0C0;
+}
+
+.category-entertainment {
+    background-color: #9966FF;
+}
+
+.category-health {
+    background-color: #FF9F40;
+}
+
+.category-housing {
+    background-color: #8BC34A;
+}
+
+.category-other {
+    background-color: #607D8B;
+}
+
+/* Category Tags */
+.category-tag {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 12px;
+    color: white;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+/* Recommendation Cards */
+.recommendation-card {
+    border-left: 4px solid #007bff;
+    padding: 15px;
+    margin-bottom: 15px;
+    background-color: white;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.recommendation-card.high-priority {
+    border-left-color: #dc3545;
+}
+
+.recommendation-card.medium-priority {
+    border-left-color: #ffc107;
+}
+
+.recommendation-card.low-priority {
+    border-left-color: #28a745;
+}
+
+.priority-indicator {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    margin-right: 5px;
+}
+
+/* Amount Styling */
+.amount-negative {
+    color: #dc3545;
+}
+
+.amount-positive {
+    color: #28a745;
+}
+
+/* Responsive Charts */
+canvas {
+    max-width: 100%;
+}
