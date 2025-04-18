@@ -411,5 +411,7 @@ class RecommendationEngine:
         if output_path:
             plt.savefig(output_path)
             print(f"Visualization saved to {output_path}")
+
         
         return fig
+    
