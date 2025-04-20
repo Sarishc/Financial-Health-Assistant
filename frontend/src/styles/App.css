@@ -1,0 +1,85 @@
+:root {
+    --primary-color: #3498db;
+    --secondary-color: #2ecc71;
+    --warning-color: #f39c12;
+    --danger-color: #e74c3c;
+    --text-color: #333;
+    --light-text: #fff;
+    --bg-color: #f5f7fa;
+    --card-bg: #fff;
+    --sidebar-width: 240px;
+    --header-height: 60px;
+  }
+  
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+  
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    line-height: 1.6;
+  }
+  
+  .app-container {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+  }
+  
+  .content-container {
+    display: flex;
+    flex: 1;
+  }
+  
+  .main-content {
+    flex: 1;
+    padding: 20px;
+    margin-left: var(--sidebar-width);
+  }
+  
+  .auth-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background-color: var(--bg-color);
+  }
+  
+  .loading {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 200px;
+    font-size: 1.2rem;
+    color: var(--primary-color);
+  }
+  
+  .error {
+    padding: 15px;
+    background-color: rgba(231, 76, 60, 0.1);
+    border-left: 4px solid var(--danger-color);
+    color: var(--danger-color);
+    margin: 10px 0;
+  }
+  
+  /* Responsive adjustments */
+  @media (max-width: 768px) {
+    .content-container {
+      flex-direction: column;
+    }
+    
+    .main-content {
+      margin-left: 0;
+      padding: 10px;
+    }
+    
+    .sidebar {
+      width: 100%;
+      height: auto;
+      position: relative;
+    }
+  }

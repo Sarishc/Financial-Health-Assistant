@@ -1,8 +1,11 @@
 # app/api/main.py
-from fastapi import FastAPI
+from fastapi import FastAPI, APIRouter
 from fastapi.middleware.cors import CORSMiddleware
 import os
 import sys
+
+# Add the parent directory to the path so Python can find the app package
+sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
 
 # Import settings
 try:
@@ -31,9 +34,6 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
-# Create empty router objects for each route type
-from fastapi import APIRouter
 
 # Import individual routers directly
 # You can comment out imports that cause errors for now
