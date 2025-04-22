@@ -27,3 +27,4 @@ Thumbs.db
 # ML models
 *.joblib
 *.pkl
+node_modules

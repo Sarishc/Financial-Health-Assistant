@@ -1,81 +1,128 @@
+// src/App.js
 import React, { useState, useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { StatusBar, LogBox, View, ActivityIndicator } from 'react-native';
+import { NavigationContainer } from '@react-navigation/native';
+import { Provider as PaperProvider, DefaultTheme } from 'react-native-paper';
+import { Provider as StoreProvider } from 'react-redux';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-// Component imports
-import Dashboard from './components/Dashboard/Dashboard';
-import Transactions from './components/Transactions/Transactions';
-import Recommendations from './components/Recommendations/Recommendations';
-import Forecasts from './components/Forecasts/Forecasts';
-import Login from './components/Auth/Login';
-import Register from './components/Auth/Register';
-import Header from './components/common/Header';
-import Sidebar from './components/common/sidebar';
+// Import navigators
+import AppNavigator from './navigation/AppNavigator';
+import AuthNavigator from './navigation/AuthNavigator';
 
-// Styles
-import './styles/App.css';
+// Import store
+import store from './store/store';
 
-function App() {
-  const [authenticated, setAuthenticated] = useState(false);
-  const [user, setUser] = useState(null);
+// Import auth context
+import { AuthContext } from './contexts/AuthContext';
+
+// Ignore specific deprecation warnings
+LogBox.ignoreLogs([
+  'ViewPropTypes will be removed',
+  'ColorPropType will be removed',
+]);
+
+// Define custom theme
+const theme = {
+  ...DefaultTheme,
+  colors: {
+    ...DefaultTheme.colors,
+    primary: '#2196F3',
+    accent: '#03A9F4',
+    background: '#f5f5f5',
+    surface: '#ffffff',
+    error: '#F44336',
+    text: '#212121',
+    onSurface: '#212121',
+    disabled: '#9E9E9E',
+    placeholder: '#9E9E9E',
+    backdrop: 'rgba(0, 0, 0, 0.5)',
+    notification: '#FF9800',
+  },
+};
+
+const App = () => {
+  const [isLoading, setIsLoading] = useState(true);
+  const [userToken, setUserToken] = useState(null);
   
-  // Check if user is authenticated on load
+  // Define authentication context
+  const authContext = React.useMemo(() => ({
+    signIn: async (token) => {
+      setIsLoading(true);
+      try {
+        await AsyncStorage.setItem('userToken', token);
+        setUserToken(token);
+      } catch (error) {
+        console.error('Error storing token:', error);
+      }
+      setIsLoading(false);
+    },
+    signOut: async () => {
+      setIsLoading(true);
+      try {
+        await AsyncStorage.removeItem('userToken');
+        setUserToken(null);
+      } catch (error) {
+        console.error('Error removing token:', error);
+      }
+      setIsLoading(false);
+    },
+    signUp: async (token) => {
+      setIsLoading(true);
+      try {
+        await AsyncStorage.setItem('userToken', token);
+        setUserToken(token);
+      } catch (error) {
+        console.error('Error storing token:', error);
+      }
+      setIsLoading(false);
+    },
+  }), []);
+  
+  // Check for existing token on app start
   useEffect(() => {
-    const token = localStorage.getItem('token');
-    if (token) {
-      // You would typically validate the token here
-      setAuthenticated(true);
-      // Get user info
-      setUser({ name: "Demo User" });
-    }
+    const bootstrapAsync = async () => {
+      let token = null;
+      try {
+        token = await AsyncStorage.getItem('userToken');
+      } catch (error) {
+        console.error('Error retrieving token:', error);
+      }
+      setUserToken(token);
+      setIsLoading(false);
+    };
+    
+    bootstrapAsync();
   }, []);
-
-  // For development purposes, automatically authenticate
-  useEffect(() => {
-    setAuthenticated(true);
-    setUser({ name: "Demo User" });
-  }, []);
-
-  const handleLogout = () => {
-    localStorage.removeItem('token');
-    setAuthenticated(false);
-    setUser(null);
-  };
-
-  // Render auth screens if not authenticated
-  if (!authenticated) {
+  
+  // Show loading screen
+  if (isLoading) {
     return (
-      <Router>
-        <div className="auth-container">
-          <Routes>
-            <Route path="/login" element={<Login setAuthenticated={setAuthenticated} />} />
-            <Route path="/register" element={<Register />} />
-            <Route path="*" element={<Navigate to="/login" />} />
-          </Routes>
-        </div>
-      </Router>
+      <PaperProvider theme={theme}>
+        <StatusBar backgroundColor={theme.colors.primary} barStyle="light-content" />
+        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+          <ActivityIndicator size="large" color={theme.colors.primary} />
+        </View>
+      </PaperProvider>
     );
   }
-
-  // Render main app if authenticated
+  
   return (
-    <Router>
-      <div className="app-container">
-        <Header user={user} onLogout={handleLogout} />
-        <div className="content-container">
-          <Sidebar />
-          <main className="main-content">
-            <Routes>
-              <Route path="/" element={<Dashboard />} />
-              <Route path="/transactions" element={<Transactions />} />
-              <Route path="/recommendations" element={<Recommendations />} />
-              <Route path="/forecasts" element={<Forecasts />} />
-              <Route path="*" element={<Navigate to="/" />} />
-            </Routes>
-          </main>
-        </div>
-      </div>
-    </Router>
+    <StoreProvider store={store}>
+      <AuthContext.Provider value={authContext}>
+        <PaperProvider theme={theme}>
+          <StatusBar backgroundColor={theme.colors.primary} barStyle="light-content" />
+          <NavigationContainer>
+            {userToken ? (
+              <AppNavigator />
+            ) : (
+              <AuthNavigator />
+            )}
+          </NavigationContainer>
+        </PaperProvider>
+      </AuthContext.Provider>
+    </StoreProvider>
   );
-}
+};
 
 export default App;
