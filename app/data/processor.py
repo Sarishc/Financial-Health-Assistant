@@ -31,9 +31,9 @@ class TransactionProcessor:
         Returns:
             DataFrame containing transaction data
         """
-        if filepath.endswith('.csv'):
+        if str(filepath).endswith('.csv'):
             df = pd.read_csv(filepath)
-        elif filepath.endswith('.xlsx') or filepath.endswith('.xls'):
+        elif str(filepath).endswith('.xlsx') or str(filepath).endswith('.xls'):
             df = pd.read_excel(filepath)
         else:
             raise ValueError(f"Unsupported file format: {filepath}")
@@ -56,9 +56,11 @@ class TransactionProcessor:
         # Standardize column names (will be expanded)
         column_mapping = {
             # Map common column names to our standard names
+            'DATE': 'transaction_date',
             'date': 'transaction_date',
             'transaction date': 'transaction_date',
             'trans_date': 'transaction_date',
+            'TRANSACTION DETAILS': 'description',
             'desc': 'description',
             'memo': 'description',
             'transaction': 'description',
@@ -74,13 +76,16 @@ class TransactionProcessor:
         # Rename columns if they exist
         for old_col, new_col in column_mapping.items():
             if old_col in cleaned_df.columns:
-                cleaned_df.rename(columns={old_col: new_col}, inplace=True)
+                cleaned_df[new_col] = cleaned_df[old_col]
         
-        # Ensure required columns exist
-        required_columns = ['transaction_date', 'description', 'amount']
-        missing_columns = [col for col in required_columns if col not in cleaned_df.columns]
-        if missing_columns:
-            raise ValueError(f"Required columns missing: {missing_columns}")
+        # Create amount column if it doesn't exist
+        if 'amount' not in cleaned_df.columns:
+            if ' WITHDRAWAL AMT ' in cleaned_df.columns and ' DEPOSIT AMT ' in cleaned_df.columns:
+                # Convert to numeric
+                cleaned_df[' WITHDRAWAL AMT '] = pd.to_numeric(cleaned_df[' WITHDRAWAL AMT '], errors='coerce').fillna(0)
+                cleaned_df[' DEPOSIT AMT '] = pd.to_numeric(cleaned_df[' DEPOSIT AMT '], errors='coerce').fillna(0)
+                # Create amount column (deposits positive, withdrawals negative)
+                cleaned_df['amount'] = cleaned_df[' DEPOSIT AMT '] - cleaned_df[' WITHDRAWAL AMT ']
         
         # Convert date to datetime
         if 'transaction_date' in cleaned_df.columns:
@@ -99,6 +104,12 @@ class TransactionProcessor:
         # Ensure we have a category column
         if 'category' not in cleaned_df.columns:
             cleaned_df['category'] = None
+        
+        # Ensure required columns exist
+        required_columns = ['transaction_date', 'description', 'amount']
+        missing_columns = [col for col in required_columns if col not in cleaned_df.columns]
+        if missing_columns:
+            raise ValueError(f"Required columns missing: {missing_columns}")
         
         # Drop rows with critical missing values
         for col in required_columns:

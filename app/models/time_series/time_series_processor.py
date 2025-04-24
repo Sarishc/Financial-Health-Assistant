@@ -72,6 +72,53 @@ class TimeSeriesProcessor:
         
         return time_series
     
+    def transactions_to_time_series(self, df: pd.DataFrame,
+                                   date_col: str = 'transaction_date',
+                                   amount_col: str = 'amount',
+                                   category_col: Optional[str] = None) -> Dict[str, pd.DataFrame]:
+        """
+        Convert transaction data to time series format 
+        (compatibility method for tests)
+        
+        Args:
+            df: DataFrame containing transaction data
+            date_col: Column name for transaction dates
+            amount_col: Column name for transaction amounts
+            category_col: Column name for transaction categories
+            
+        Returns:
+            Dictionary mapping categories to time series DataFrames
+        """
+        # First convert to time series using the existing method
+        time_series_df = self.convert_to_time_series(
+            df, 
+            date_col=date_col, 
+            amount_col=amount_col, 
+            category_col=category_col
+        )
+        
+        # Now transform to the expected format for tests
+        # The tests expect a dict of DataFrames, one per category
+        if category_col and category_col in time_series_df.columns:
+            categories = time_series_df[category_col].unique()
+            result = {}
+            
+            for category in categories:
+                category_df = time_series_df[time_series_df[category_col] == category].copy()
+                # Keep only date and amount columns, rename as expected
+                result[category] = category_df[['transaction_date', 'amount_sum']].rename(
+                    columns={'transaction_date': 'date', 'amount_sum': 'amount'}
+                )
+            
+            return result
+        else:
+            # If no category, return a single DataFrame under 'all' key
+            return {
+                'all': time_series_df[['transaction_date', 'amount_sum']].rename(
+                    columns={'transaction_date': 'date', 'amount_sum': 'amount'}
+                )
+            }
+    
     def extract_temporal_features(self, df: pd.DataFrame, 
                                 date_col: str = 'transaction_date') -> pd.DataFrame:
         """
